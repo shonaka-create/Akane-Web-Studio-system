@@ -32,6 +32,12 @@ const icons: Record<NavKey, React.ReactNode> = {
       <path d="M4.5 20.5c0-4 3.4-6.2 7.5-6.2s7.5 2.2 7.5 6.2" strokeLinecap="round" />
     </svg>
   ),
+  sales: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M4 19V5M4 19h16" strokeLinecap="round" />
+      <path d="M8 15l3.5-4 3 2.5L20 7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
   inventory: (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <path d="M3 7.5l9-4.5 9 4.5v9l-9 4.5-9-4.5z" strokeLinejoin="round" />

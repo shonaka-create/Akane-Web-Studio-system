@@ -3,7 +3,7 @@
 
 export const dict = {
   ja: {
-    navDashboard: 'ダッシュボード', navShift: 'シフト管理', navReservation: '予約日程', navCustomer: '顧客管理', navInventory: '資材発注', navSettings: '設定',
+    navDashboard: 'ダッシュボード', navShift: 'シフト管理', navReservation: '予約日程', navCustomer: '顧客管理', navSales: '売上管理', navInventory: '資材発注', navSettings: '設定',
     roleOwner: 'オーナー', search: '検索…', dateStr: '2026年6月27日（土）',
     greeting: 'おはようございます、Yukiさん', greetingSub: '本日の店舗の状況をまとめました。',
     mToday: '本日の予約', mStaff: '出勤スタッフ', mFollow: '要フォロー顧客', mStock: '在庫アラート',
@@ -44,9 +44,18 @@ export const dict = {
     accBadge: 'PRO', accLockedTitle: 'アクセス分析は有料プランの機能です', accLockedDesc: '自社サイトとInstagramのアクセス状況をHUMAN-HUB内でまとめて確認できます。',
     accFeat1: 'サイト訪問数・流入経路の分析', accFeat2: 'Instagram フォロワー・リーチ推移', accFeat3: '予約ページへの導線レポート',
     accPlan: 'PRO プラン', accPrice: '$29', accPer: '/ 月', accUpgrade: 'アップグレード', accWeb: '自社サイト', accIg: 'Instagram', accVisits: '今月の訪問', accFollowers: 'フォロワー', accReach: 'リーチ',
+    accContactTitle: 'PRO機能のお問い合わせ', accContactDesc: 'アクセス分析（PRO機能）のご利用をご希望の方は、下記の窓口までお問い合わせください。担当者より折り返しご案内いたします。', accContactLabel: 'お問い合わせ先', accContactCta: 'お問い合わせする', accContactClose: '閉じる',
+    accContactSubject: '【HUMAN-HUB】PRO機能（アクセス分析）について', accContactBody: 'HUMAN-HUB サポート担当者さま\n\nPRO機能（アクセス分析）の利用を希望します。\n詳細についてご案内ください。\n\n店舗名：\nご担当者名：\nご連絡先：',
+    salesPeriodMonth: '今月', salesPeriodLastMonth: '先月', salesPeriodYear: '今年', salesExport: 'CSVを出力',
+    mRevenue: '今月の売上', mRevenueDelta: '前月比', mAvgSpend: '客単価', mTxn: '取引件数',
+    salesRetail: '店販',
+    secSalesTrend: '売上推移', secSalesBreakdown: '売上内訳', secSalesStaff: 'スタッフ別売上', secSalesRecent: '最近の取引',
+    salesService: '技術売上', salesRetailRev: '店販売上',
+    salesColCustomer: '顧客', salesColMenu: 'メニュー', salesColStaff: '担当', salesColAmount: '金額',
+    secSalesSummary: '売上サマリ', salesThisMonth: '今月の売上',
   },
   en: {
-    navDashboard: 'Dashboard', navShift: 'Shifts', navReservation: 'Bookings', navCustomer: 'Customers', navInventory: 'Inventory', navSettings: 'Settings',
+    navDashboard: 'Dashboard', navShift: 'Shifts', navReservation: 'Bookings', navCustomer: 'Customers', navSales: 'Sales', navInventory: 'Inventory', navSettings: 'Settings',
     roleOwner: 'Owner', search: 'Search…', dateStr: 'Sat, 27 Jun 2026',
     greeting: 'Good morning, Yuki', greetingSub: "Here's how your salon is doing today.",
     mToday: "Today's bookings", mStaff: 'Staff on shift', mFollow: 'Needs follow-up', mStock: 'Low stock',
@@ -87,6 +96,15 @@ export const dict = {
     accBadge: 'PRO', accLockedTitle: 'Access analytics is a paid-plan feature', accLockedDesc: 'See your website and Instagram performance together inside HUMAN-HUB.',
     accFeat1: 'Site visits & traffic sources', accFeat2: 'Instagram followers & reach trends', accFeat3: 'Booking-page funnel report',
     accPlan: 'PRO plan', accPrice: '$29', accPer: '/ mo', accUpgrade: 'Upgrade', accWeb: 'Website', accIg: 'Instagram', accVisits: 'Visits this month', accFollowers: 'Followers', accReach: 'Reach',
+    accContactTitle: 'Contact us about PRO', accContactDesc: 'To use Access analytics (a PRO feature), please reach out to us below. Our team will get back to you shortly.', accContactLabel: 'Contact', accContactCta: 'Contact us', accContactClose: 'Close',
+    accContactSubject: '[HUMAN-HUB] About the PRO feature (Access analytics)', accContactBody: 'Dear HUMAN-HUB support team,\n\nI would like to use the PRO feature (Access analytics).\nPlease share more details.\n\nStore name:\nContact person:\nPhone/email:',
+    salesPeriodMonth: 'This month', salesPeriodLastMonth: 'Last month', salesPeriodYear: 'This year', salesExport: 'Export CSV',
+    mRevenue: 'Revenue this month', mRevenueDelta: 'vs last month', mAvgSpend: 'Avg spend', mTxn: 'Transactions',
+    salesRetail: 'Retail',
+    secSalesTrend: 'Revenue trend', secSalesBreakdown: 'Revenue breakdown', secSalesStaff: 'Sales by staff', secSalesRecent: 'Recent transactions',
+    salesService: 'Service revenue', salesRetailRev: 'Retail revenue',
+    salesColCustomer: 'Customer', salesColMenu: 'Menu', salesColStaff: 'Staff', salesColAmount: 'Amount',
+    secSalesSummary: 'Sales summary', salesThisMonth: 'Revenue this month',
   },
 } as const;
 

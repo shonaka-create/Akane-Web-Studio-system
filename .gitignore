@@ -43,3 +43,6 @@ next-env.d.ts
 
 # junk
 *.stackdump
+
+# local scratch note (contains test credentials)
+memo

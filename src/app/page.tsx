@@ -1,17 +1,29 @@
 'use client';
 
+import Link from 'next/link';
 import { useLang } from '@/i18n/LangProvider';
 import { Avatar, Card } from '@/components/ui';
 import { toneStyles } from '@/lib/tones';
 import {
   dashboardMetrics as m,
   followUps,
+  salesSummary,
+  salesTrend,
   stockAlerts,
   todaySchedule,
 } from '@/lib/mock';
 
+const EN_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/** Formats a whole-dollar amount as e.g. $18,420. */
+function money(n: number): string {
+  return `$${n.toLocaleString('en-US')}`;
+}
+
 export default function DashboardPage() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const monthLabel = (mo: number) => (lang === 'ja' ? `${mo}月` : EN_MONTHS[mo - 1]);
+  const trendMax = Math.max(...salesTrend.map((b) => b.value));
 
   return (
     <>
@@ -27,6 +39,45 @@ export default function DashboardPage() {
         <Metric label={t.mFollow} value={m.needsFollow} unit={t.uPeople} foot={t.followDesc} valueColor="var(--accent)" footColor="var(--accent)" />
         <Metric label={t.mStock} value={m.lowStock} unit={t.uItems} foot={t.needOrder} valueColor="var(--rose)" footColor="var(--rose)" />
       </div>
+
+      {/* Sales summary */}
+      <Card style={{ marginBottom: 22 }}>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: 18 }}>
+          <h2 style={{ fontFamily: 'var(--serif)', fontSize: 19, fontWeight: 600, margin: 0 }}>{t.secSalesSummary}</h2>
+          <Link href="/sales" style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--accent)', textDecoration: 'none' }}>{t.viewAll}</Link>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '0.9fr 2fr', gap: 28, alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: 12, color: 'var(--ink2)' }}>{t.salesThisMonth}</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 6 }}>
+              <span style={{ fontFamily: 'var(--serif)', fontSize: 38, fontWeight: 600, lineHeight: 0.9 }}>{money(salesSummary.monthRevenue)}</span>
+              <span style={{ fontSize: 12, color: 'var(--sage)', fontWeight: 600 }}>▲ {salesSummary.monthRevenueDelta}%</span>
+            </div>
+            <div style={{ display: 'flex', gap: 18, marginTop: 18 }}>
+              <div>
+                <div style={{ fontSize: 11, color: 'var(--ink3)' }}>{t.salesService}</div>
+                <div style={{ fontFamily: 'var(--serif)', fontSize: 17, fontWeight: 600 }}>{money(salesSummary.serviceRevenue)}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 11, color: 'var(--ink3)' }}>{t.salesRetailRev}</div>
+                <div style={{ fontFamily: 'var(--serif)', fontSize: 17, fontWeight: 600 }}>{money(salesSummary.retailRevenue)}</div>
+              </div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 140, borderLeft: '1px solid var(--line)', paddingLeft: 28 }}>
+            {salesTrend.map((b) => {
+              const h = Math.round((b.value / trendMax) * 100);
+              const isLast = b.month === salesTrend[salesTrend.length - 1].month;
+              return (
+                <div key={b.month} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7, height: '100%', justifyContent: 'flex-end' }}>
+                  <div style={{ width: '100%', maxWidth: 40, height: `${h}%`, borderRadius: '7px 7px 0 0', background: isLast ? 'var(--accent)' : 'var(--accent-soft)' }} />
+                  <div style={{ fontSize: 10.5, color: 'var(--ink3)' }}>{monthLabel(b.month)}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </Card>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.7fr 1fr', gap: 22 }}>
         {/* Today's schedule */}

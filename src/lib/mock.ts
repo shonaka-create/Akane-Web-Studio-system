@@ -7,6 +7,11 @@ import type {
   CustomerListItem,
   FollowUp,
   OrderRow,
+  SalesCategory,
+  SalesMonthBar,
+  SalesStaffRank,
+  SalesSummary,
+  SalesTxn,
   ScheduleEntry,
   ShiftRow,
   Staff,
@@ -197,6 +202,51 @@ export const orderRows: OrderRow[] = [
   { id: 'o3', item: 'ヘアオイル（店販）', qty: '12', supplier: 'Aroma Co.', orderDate: '6/27', eta: '7/1', status: 'ordered' },
   { id: 'o4', item: 'トリートメント剤', qty: '12', supplier: 'B-Cosme', orderDate: '6/24', eta: '6/27', status: 'arrived' },
   { id: 'o5', item: 'シャンプー（業務用）', qty: '24', supplier: 'SalonPro', orderDate: '6/20', eta: '6/23', status: 'arrived' },
+];
+
+// ---- Sales ----
+export const salesSummary: SalesSummary = {
+  monthRevenue: 18420,
+  monthRevenueDelta: 12,
+  avgSpend: 165,
+  transactions: 112,
+  serviceRevenue: 14180,
+  retailRevenue: 4240,
+};
+
+// 6-month revenue trend (Jan..Jun). `month` is 1-based.
+export const salesTrend: SalesMonthBar[] = [
+  { month: 1, value: 13900 },
+  { month: 2, value: 14600 },
+  { month: 3, value: 15800 },
+  { month: 4, value: 15200 },
+  { month: 5, value: 16450 },
+  { month: 6, value: 18420 },
+];
+
+export const salesCategories: SalesCategory[] = [
+  { id: 'sc1', nameKey: 'svcColor', amount: 7360, pct: 40, tone: 'accent' },
+  { id: 'sc2', nameKey: 'svcCut', amount: 4420, pct: 24, tone: 'sage' },
+  { id: 'sc3', nameKey: 'svcSpa', amount: 2400, pct: 13, tone: 'rose' },
+  { id: 'sc4', nameKey: 'salesRetail', amount: 4240, pct: 23, tone: 'accent' },
+];
+
+export const salesStaffRank: SalesStaffRank[] = [
+  { id: 'sr1', initial: 'E', name: 'Emma', tone: 'sage', amount: 5240, share: 28 },
+  { id: 'sr2', initial: 'Y', name: 'Yuki', tone: 'accent', amount: 4680, share: 25 },
+  { id: 'sr3', initial: 'A', name: 'Aoi', tone: 'accent', amount: 3960, share: 22 },
+  { id: 'sr4', initial: 'M', name: 'Mei', tone: 'rose', amount: 2740, share: 15 },
+  { id: 'sr5', initial: 'L', name: 'Liam', tone: 'sage', amount: 1800, share: 10 },
+];
+
+export const salesTxns: SalesTxn[] = [
+  { id: 't1', date: '6/27', customer: '山田 花子', serviceKey: 'svcCutColor', staffInitial: 'E', staffName: 'Emma', tone: 'sage', amount: 245 },
+  { id: 't2', date: '6/27', customer: '佐藤 美咲', serviceKey: 'svcSpa', staffInitial: 'A', staffName: 'Aoi', tone: 'accent', amount: 120 },
+  { id: 't3', date: '6/27', customer: 'Olivia Chen', serviceKey: 'svcCut', staffInitial: 'E', staffName: 'Emma', tone: 'sage', amount: 85 },
+  { id: 't4', date: '6/26', customer: '田中 葵', serviceKey: 'svcColor', staffInitial: 'M', staffName: 'Mei', tone: 'rose', amount: 165 },
+  { id: 't5', date: '6/26', customer: 'Sophie Müller', serviceKey: 'svcSpa', staffInitial: 'A', staffName: 'Aoi', tone: 'accent', amount: 120 },
+  { id: 't6', date: '6/26', customer: '渡辺 葵', serviceKey: 'svcCutColor', staffInitial: 'Y', staffName: 'Yuki', tone: 'accent', amount: 230 },
+  { id: 't7', date: '6/25', customer: 'James Lee', serviceKey: 'svcCut', staffInitial: 'L', staffName: 'Liam', tone: 'sage', amount: 85 },
 ];
 
 // ---- Access analytics (PRO, shown blurred behind the upsell) ----

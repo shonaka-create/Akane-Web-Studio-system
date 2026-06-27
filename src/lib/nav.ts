@@ -5,6 +5,7 @@ export type NavKey =
   | 'shift'
   | 'reservation'
   | 'customer'
+  | 'sales'
   | 'inventory'
   | 'access'
   | 'settings';
@@ -21,6 +22,7 @@ export const NAV: NavItem[] = [
   { key: 'shift', href: '/shifts', labelKey: 'navShift' },
   { key: 'reservation', href: '/bookings', labelKey: 'navReservation' },
   { key: 'customer', href: '/customers', labelKey: 'navCustomer' },
+  { key: 'sales', href: '/sales', labelKey: 'navSales' },
   { key: 'inventory', href: '/inventory', labelKey: 'navInventory' },
   { key: 'access', href: '/access', labelKey: 'navAccess', pro: true },
   { key: 'settings', href: '/settings', labelKey: 'navSettings' },

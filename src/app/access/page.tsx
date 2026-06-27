@@ -1,10 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import { useLang } from '@/i18n/LangProvider';
 import { accessStats } from '@/lib/mock';
 
+const CONTACT_EMAIL = 'akane.webstudio@gmail.com';
+
 export default function AccessPage() {
   const { t } = useLang();
+  const [contactOpen, setContactOpen] = useState(false);
+
+  const mailtoHref = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(t.accContactSubject)}&body=${encodeURIComponent(t.accContactBody)}`;
 
   return (
     <div style={{ position: 'relative', minHeight: 560 }}>
@@ -72,9 +78,34 @@ export default function AccessPage() {
               <span style={{ fontSize: 12, color: 'var(--ink3)' }}>{t.accPer}</span>
             </div>
           </div>
-          <button style={{ width: '100%', font: '700 14px var(--ui)', background: '#BFA06A', color: '#fff', border: 'none', borderRadius: 999, padding: 14, cursor: 'pointer' }}>{t.accUpgrade}</button>
+          <button onClick={() => setContactOpen(true)} style={{ width: '100%', font: '700 14px var(--ui)', background: '#BFA06A', color: '#fff', border: 'none', borderRadius: 999, padding: 14, cursor: 'pointer' }}>{t.accUpgrade}</button>
         </div>
       </div>
+
+      {/* Contact modal */}
+      {contactOpen && (
+        <div
+          onClick={() => setContactOpen(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(46,42,37,.42)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, zIndex: 50 }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ background: '#fff', borderRadius: 22, padding: '38px 40px', maxWidth: 440, width: '100%', textAlign: 'center', boxShadow: '0 24px 60px rgba(46,42,37,.22)' }}
+          >
+            <div style={{ width: 58, height: 58, borderRadius: '50%', background: '#F0E7D4', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#BFA06A" strokeWidth="1.7"><rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="m3 7 9 6 9-6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </div>
+            <h2 style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 600, margin: '0 0 10px' }}>{t.accContactTitle}</h2>
+            <p style={{ fontSize: 13, color: 'var(--ink2)', lineHeight: 1.7, margin: '0 0 22px' }}>{t.accContactDesc}</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: 16, background: '#FBF9F5', borderRadius: 14, marginBottom: 22 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.6, color: 'var(--ink3)' }}>{t.accContactLabel}</span>
+              <a href={`mailto:${CONTACT_EMAIL}`} style={{ fontSize: 15, fontWeight: 600, color: '#BFA06A', textDecoration: 'none' }}>{CONTACT_EMAIL}</a>
+            </div>
+            <a href={mailtoHref} style={{ display: 'block', width: '100%', boxSizing: 'border-box', font: '700 14px var(--ui)', background: '#BFA06A', color: '#fff', border: 'none', borderRadius: 999, padding: 14, cursor: 'pointer', textDecoration: 'none' }}>{t.accContactCta}</a>
+            <button onClick={() => setContactOpen(false)} style={{ marginTop: 12, font: '600 13px var(--ui)', background: 'none', color: 'var(--ink2)', border: 'none', cursor: 'pointer' }}>{t.accContactClose}</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

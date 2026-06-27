@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { useLang } from '@/i18n/LangProvider';
 import { navItemForPath } from '@/lib/nav';
+import { signout } from '@/app/login/actions';
 
 export function Header() {
   const pathname = usePathname();
@@ -54,6 +55,19 @@ export function Header() {
           </svg>
           <span style={{ position: 'absolute', top: -2, right: -2, width: 7, height: 7, borderRadius: '50%', background: 'var(--rose)' }} />
         </div>
+        <form action={signout} style={{ display: 'flex' }}>
+          <button
+            type="submit"
+            title="ログアウト"
+            aria-label="ログアウト"
+            style={{ display: 'flex', border: 'none', background: 'none', cursor: 'pointer', padding: 0, color: 'var(--ink2)' }}
+          >
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M16 17l5-5-5-5M21 12H9" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        </form>
       </div>
     </header>
   );

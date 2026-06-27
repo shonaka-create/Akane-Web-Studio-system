@@ -40,7 +40,21 @@ export async function updateSession(request: NextRequest) {
   );
 
   // getUser() を呼ぶことでセッションが更新される。これより前に処理を挟まないこと。
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // 未ログインなら /login へリダイレクト（公開パスは除く）。
+  const path = request.nextUrl.pathname;
+  const isPublic =
+    path.startsWith('/login') ||
+    path.startsWith('/auth') ||
+    path.startsWith('/supabase-check');
+  if (!user && !isPublic) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/login';
+    return NextResponse.redirect(url);
+  }
 
   return supabaseResponse;
 }

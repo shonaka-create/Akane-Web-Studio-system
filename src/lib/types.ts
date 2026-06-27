@@ -128,3 +128,51 @@ export type OrderRow = {
   eta: string;
   status: OrderStatus;
 };
+
+// ---- Sales ----
+
+/** Headline figures for the current period (amounts in whole dollars). */
+export type SalesSummary = {
+  monthRevenue: number;
+  /** % change vs. the previous month (can be negative) */
+  monthRevenueDelta: number;
+  avgSpend: number;
+  transactions: number;
+  serviceRevenue: number;
+  retailRevenue: number;
+};
+
+/** One bar in the revenue trend chart. `month` is 1-based. */
+export type SalesMonthBar = { month: number; value: number };
+
+/** Revenue split by service/retail category. */
+export type SalesCategory = {
+  id: string;
+  nameKey: LabelKey;
+  amount: number;
+  pct: number;
+  tone: Tone;
+};
+
+/** Sales attributed to a single staff member. */
+export type SalesStaffRank = {
+  id: string;
+  initial: string;
+  name: string;
+  tone: Tone;
+  amount: number;
+  /** share of total revenue, % */
+  share: number;
+};
+
+/** A single recorded transaction. */
+export type SalesTxn = {
+  id: string;
+  date: string;
+  customer: string;
+  serviceKey: LabelKey;
+  staffInitial: string;
+  staffName: string;
+  tone: Tone;
+  amount: number;
+};
