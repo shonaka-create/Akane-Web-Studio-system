@@ -1,4 +1,5 @@
 import LoginForm from './LoginForm';
+import FlashMessage from './FlashMessage';
 
 export default async function LoginPage({
   searchParams,
@@ -51,36 +52,7 @@ export default async function LoginPage({
           サロン管理システム ログイン
         </p>
 
-        {error && (
-          <p
-            style={{
-              fontSize: 13,
-              color: 'var(--rose)',
-              background: 'var(--rose-soft, #f7e9e7)',
-              border: '1px solid var(--rose)',
-              borderRadius: 8,
-              padding: '10px 12px',
-              margin: '0 0 16px',
-            }}
-          >
-            {error}
-          </p>
-        )}
-        {message === 'signup' && (
-          <p
-            style={{
-              fontSize: 13,
-              color: 'var(--sage)',
-              background: 'var(--sage-soft, #e9efe9)',
-              border: '1px solid var(--sage)',
-              borderRadius: 8,
-              padding: '10px 12px',
-              margin: '0 0 16px',
-            }}
-          >
-            アカウントを作成しました。メール確認が必要な場合は受信箱をご確認ください。
-          </p>
-        )}
+        <FlashMessage error={error} message={message} />
 
         <LoginForm />
       </div>
