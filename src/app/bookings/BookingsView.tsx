@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { useLang } from '@/i18n/LangProvider';
 import { Field, FieldRow, FormActions, Modal, Select, TextInput } from '@/components/Modal';
 import { toneStyles } from '@/lib/tones';
@@ -9,6 +10,9 @@ import { SERVICE_KEYS } from '@/lib/formOptions';
 import type { BookingBlock, Staff, Tone } from '@/lib/types';
 
 const BOOKING_HOURS = ['9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00'];
+const EN_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const JA_WD = ['日', '月', '火', '水', '木', '金', '土'];
+const EN_WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 /** YYYY-MM-DD（ローカル日付）。フォームの初期値に使う。 */
 function todayStr(): string {
@@ -16,18 +20,44 @@ function todayStr(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
+/** 'YYYY-MM-DD' をローカル Date に。 */
+function parseYmd(s: string): Date {
+  const [y, m, d] = s.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function ymd(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 export function BookingsView({
+  date,
   staff,
   blocks,
   staffOptions,
 }: {
+  date: string;
   staff: { initial: string; name: string; tone: Tone }[];
   blocks: BookingBlock[];
   staffOptions: Staff[];
 }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pending, start] = useTransition();
+
+  const current = parseYmd(date);
+  const isToday = date === todayStr();
+  const goTo = (d: Date) => router.push(`/bookings?date=${ymd(d)}`);
+  const shiftDay = (delta: number) => {
+    const d = new Date(current);
+    d.setDate(d.getDate() + delta);
+    goTo(d);
+  };
+  const dayLabel =
+    lang === 'ja'
+      ? `${current.getMonth() + 1}月${current.getDate()}日（${JA_WD[current.getDay()]}）`
+      : `${EN_WD[current.getDay()]}, ${current.getDate()} ${EN_MONTHS[current.getMonth()]}`;
 
   function submit(formData: FormData) {
     start(async () => {
@@ -52,10 +82,10 @@ export function BookingsView({
   return (
     <>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 22 }}>
-        <button style={navBtn}>‹</button>
-        <span style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 600 }}>{t.resDay}</span>
-        <button style={navBtn}>›</button>
-        <button style={{ font: '500 12px var(--ui)', border: '1px solid var(--line)', background: '#fff', borderRadius: 999, padding: '6px 14px', cursor: 'pointer', color: 'var(--ink2)' }}>{t.today}</button>
+        <button onClick={() => shiftDay(-1)} style={navBtn} aria-label="previous day">‹</button>
+        <span style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 600 }}>{dayLabel}</span>
+        <button onClick={() => shiftDay(1)} style={navBtn} aria-label="next day">›</button>
+        <button onClick={() => goTo(new Date())} style={{ font: '500 12px var(--ui)', border: '1px solid var(--line)', background: isToday ? 'var(--accent-soft)' : '#fff', borderRadius: 999, padding: '6px 14px', cursor: 'pointer', color: isToday ? 'var(--accent)' : 'var(--ink2)' }}>{t.today}</button>
         <button onClick={() => setOpen(true)} style={{ marginLeft: 'auto', font: '600 12.5px var(--ui)', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: '9px 18px', cursor: 'pointer' }}>＋ {t.newBooking}</button>
       </div>
 
@@ -63,7 +93,7 @@ export function BookingsView({
         <form action={submit}>
           <Field label={t.formCustomer}><TextInput name="customer_name" required placeholder={t.formCustomer} /></Field>
           <FieldRow>
-            <Field label={t.formDate}><TextInput type="date" name="booking_date" required defaultValue={todayStr()} /></Field>
+            <Field label={t.formDate}><TextInput type="date" name="booking_date" required defaultValue={date} /></Field>
             <Field label={t.formTime}><TextInput type="time" name="start_time" required defaultValue="10:00" /></Field>
           </FieldRow>
           <FieldRow>

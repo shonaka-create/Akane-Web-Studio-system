@@ -1,16 +1,15 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { useLang } from '@/i18n/LangProvider';
 import { Avatar, Card } from '@/components/ui';
 import { Field, FieldRow, FormActions, Modal, Select, TextInput } from '@/components/Modal';
 import { toneStyles } from '@/lib/tones';
 import { createTransaction } from '@/lib/actions';
 import { SERVICE_KEYS } from '@/lib/formOptions';
-import type { SalesData } from '@/lib/data';
+import type { SalesData, SalesPeriod } from '@/lib/data';
 import type { Staff } from '@/lib/types';
-
-type Period = 'month' | 'lastMonth' | 'year';
 
 const EN_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -27,9 +26,9 @@ function todayStr(): string {
 
 const TXN_COLS = '0.7fr 1.6fr 1.3fr 1.1fr 0.9fr';
 
-export function SalesView({ summary: s, trend, categories, staffRank, txns, staff }: SalesData & { staff: Staff[] }) {
+export function SalesView({ period, today, summary: s, trend, categories, staffRank, txns, staff }: SalesData & { staff: Staff[] }) {
   const { t, lang } = useLang();
-  const [period, setPeriod] = useState<Period>('month');
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pending, start] = useTransition();
 
@@ -42,6 +41,15 @@ export function SalesView({ summary: s, trend, categories, staffRank, txns, staf
 
   const monthLabel = (m: number) => (lang === 'ja' ? `${m}月` : EN_MONTHS[m - 1]);
   const trendMax = Math.max(...trend.map((b) => b.value), 1);
+
+  const periodOptions: { key: SalesPeriod; label: string }[] = [
+    { key: 'month', label: t.salesPeriodMonth },
+    { key: 'lastMonth', label: t.salesPeriodLastMonth },
+    { key: 'year', label: t.salesPeriodYear },
+  ];
+  const periodName = periodOptions.find((p) => p.key === period)!.label;
+  // 期間に応じた売上ラベル（例: 「今月の売上」/「今年の売上」）。
+  const revenueLabel = lang === 'ja' ? `${periodName}の${t.salesRevenueWord}` : `${t.salesRevenueWord} · ${periodName}`;
 
   const periodBtn = (active: boolean): React.CSSProperties => ({
     font: '600 12.5px var(--ui)',
@@ -57,14 +65,46 @@ export function SalesView({ summary: s, trend, categories, staffRank, txns, staf
 
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 22 }}>
-        <div style={{ display: 'flex', gap: 5, background: '#FBF9F5', border: '1px solid var(--line)', borderRadius: 999, padding: 4 }}>
-          <button onClick={() => setPeriod('month')} style={periodBtn(period === 'month')}>{t.salesPeriodMonth}</button>
-          <button onClick={() => setPeriod('lastMonth')} style={periodBtn(period === 'lastMonth')}>{t.salesPeriodLastMonth}</button>
-          <button onClick={() => setPeriod('year')} style={periodBtn(period === 'year')}>{t.salesPeriodYear}</button>
+      {/* 本日の積み上げ — 毎日の売上入力をすぐ行えるよう最上部に配置 */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 18,
+          background: 'var(--accent-soft)',
+          border: '1px solid var(--accent)',
+          borderRadius: 16,
+          padding: '18px 22px',
+          marginBottom: 20,
+          flexWrap: 'wrap',
+        }}
+      >
+        <div>
+          <div style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 600, letterSpacing: 0.3 }}>{t.salesTodayTitle}</div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginTop: 4 }}>
+            <span style={{ fontFamily: 'var(--serif)', fontSize: 34, fontWeight: 600, lineHeight: 1, color: 'var(--ink)' }}>{money(today.revenue)}</span>
+            <span style={{ fontSize: 13, color: 'var(--ink2)' }}>{today.count} {t.uCases}</span>
+          </div>
         </div>
-        <button onClick={() => setOpen(true)} style={{ marginLeft: 'auto', font: '600 12.5px var(--ui)', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: '9px 18px', cursor: 'pointer' }}>＋ {t.btnAddSales}</button>
-        <button style={{ font: '600 12.5px var(--ui)', background: '#fff', color: 'var(--accent)', border: '1px solid var(--accent)', borderRadius: 999, padding: '9px 18px', cursor: 'pointer' }}>↓ {t.salesExport}</button>
+        <span style={{ fontSize: 12, color: 'var(--ink2)', maxWidth: 260, lineHeight: 1.5 }}>
+          {today.count === 0 ? t.salesTodayEmpty : t.salesTodayHint}
+        </span>
+        <button
+          onClick={() => setOpen(true)}
+          style={{ marginLeft: 'auto', font: '700 13.5px var(--ui)', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: '12px 24px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+        >
+          ＋ {t.salesAddToday}
+        </button>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 22 }}>
+        <span style={{ fontSize: 12, color: 'var(--ink3)', marginRight: 2 }}>{t.salesViewPeriod}</span>
+        <div style={{ display: 'flex', gap: 5, background: '#FBF9F5', border: '1px solid var(--line)', borderRadius: 999, padding: 4 }}>
+          {periodOptions.map((p) => (
+            <button key={p.key} onClick={() => router.push(`/sales?period=${p.key}`)} style={periodBtn(period === p.key)}>{p.label}</button>
+          ))}
+        </div>
+        <button style={{ marginLeft: 'auto', font: '600 12.5px var(--ui)', background: '#fff', color: 'var(--accent)', border: '1px solid var(--accent)', borderRadius: 999, padding: '9px 18px', cursor: 'pointer' }}>↓ {t.salesExport}</button>
       </div>
 
       <Modal open={open} onClose={() => setOpen(false)} title={t.addSalesTitle}>
@@ -103,10 +143,21 @@ export function SalesView({ summary: s, trend, categories, staffRank, txns, staf
 
       {/* Metric cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 18, marginBottom: 24 }}>
-        <Metric label={t.mRevenue} value={money(s.monthRevenue)} foot={`▲ ${s.monthRevenueDelta}%`} footColor="var(--sage)" />
-        <Metric label={t.mRevenueDelta} value={`${s.monthRevenueDelta >= 0 ? '+' : ''}${s.monthRevenueDelta}%`} foot={t.salesPeriodLastMonth} valueColor="var(--sage)" footColor="var(--ink3)" />
+        <Metric
+          label={revenueLabel}
+          value={money(s.monthRevenue)}
+          foot={`${s.monthRevenueDelta >= 0 ? '▲ +' : '▼ '}${s.monthRevenueDelta}% ${t.salesVsPrev}`}
+          footColor={s.monthRevenueDelta >= 0 ? 'var(--sage)' : 'var(--rose)'}
+        />
+        <Metric
+          label={t.mRevenueDelta}
+          value={`${s.monthRevenueDelta >= 0 ? '+' : ''}${s.monthRevenueDelta}%`}
+          foot={t.salesVsPrev}
+          valueColor={s.monthRevenueDelta >= 0 ? 'var(--sage)' : 'var(--rose)'}
+          footColor="var(--ink3)"
+        />
         <Metric label={t.mAvgSpend} value={money(s.avgSpend)} foot={t.custSpend} footColor="var(--ink3)" />
-        <Metric label={t.mTxn} value={s.transactions} unit={t.uCases} foot={t.salesPeriodMonth} footColor="var(--ink3)" />
+        <Metric label={t.mTxn} value={s.transactions} unit={t.uCases} foot={periodName} footColor="var(--ink3)" />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.7fr 1fr', gap: 22, marginBottom: 22 }}>

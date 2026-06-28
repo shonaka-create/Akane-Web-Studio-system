@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useMemo, useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { useLang } from '@/i18n/LangProvider';
 import { Avatar } from '@/components/ui';
 import { Field, FieldRow, FormActions, Modal, Select, TextInput } from '@/components/Modal';
@@ -26,13 +27,32 @@ export function CustomersView(props: Props) {
 }
 
 /* ---------------- Detail (list + selected customer) ---------------- */
+type Filter = 'all' | 'follow' | 'new';
+
 function DetailView({ customerCount, customerList, customerDetail, staff, onBulk }: Props & { onBulk: () => void }) {
   const { t } = useLang();
+  const router = useRouter();
   const d = customerDetail;
-  const filters = [t.custFilterAll, t.custFilterFollow, t.custFilterNew];
+  const filters: { key: Filter; label: string }[] = [
+    { key: 'all', label: t.custFilterAll },
+    { key: 'follow', label: t.custFilterFollow },
+    { key: 'new', label: t.custFilterNew },
+  ];
+  const [filter, setFilter] = useState<Filter>('all');
+  const [query, setQuery] = useState('');
   const [addOpen, setAddOpen] = useState(false);
   const [pending, start] = useTransition();
   const [memoPending, startMemo] = useTransition();
+
+  const visibleCustomers = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return customerList.filter((c) => {
+      if (filter === 'follow' && !c.segmentFollow) return false;
+      if (filter === 'new' && !c.segmentNew) return false;
+      if (q && !c.name.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }, [customerList, filter, query]);
 
   function submitCustomer(formData: FormData) {
     start(async () => {
@@ -93,33 +113,45 @@ function DetailView({ customerCount, customerList, customerDetail, staff, onBulk
         <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 16, padding: 18, boxShadow: '0 1px 2px rgba(46,42,37,.04)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#FBF9F5', border: '1px solid var(--line)', borderRadius: 999, padding: '8px 13px', marginBottom: 14 }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" strokeWidth="1.8"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" strokeLinecap="round" /></svg>
-            <input placeholder={t.search} style={{ border: 'none', outline: 'none', background: 'none', font: '12.5px var(--ui)', color: 'var(--ink)', width: '100%' }} />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t.search} style={{ border: 'none', outline: 'none', background: 'none', font: '12.5px var(--ui)', color: 'var(--ink)', width: '100%' }} />
           </div>
           <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
-            {filters.map((f, i) => (
-              <span
-                key={f}
-                style={{
-                  fontSize: 11,
-                  padding: '5px 11px',
-                  borderRadius: 999,
-                  whiteSpace: 'nowrap',
-                  cursor: 'pointer',
-                  background: i === 0 ? 'var(--accent)' : '#FBF9F5',
-                  color: i === 0 ? '#fff' : 'var(--ink2)',
-                  border: i === 0 ? 'none' : '1px solid var(--line)',
-                }}
-              >
-                {f}
-              </span>
-            ))}
+            {filters.map((f) => {
+              const on = filter === f.key;
+              return (
+                <button
+                  key={f.key}
+                  onClick={() => setFilter(f.key)}
+                  style={{
+                    fontSize: 11,
+                    padding: '5px 11px',
+                    borderRadius: 999,
+                    whiteSpace: 'nowrap',
+                    cursor: 'pointer',
+                    background: on ? 'var(--accent)' : '#FBF9F5',
+                    color: on ? '#fff' : 'var(--ink2)',
+                    border: on ? 'none' : '1px solid var(--line)',
+                    font: '11px var(--ui)',
+                  }}
+                >
+                  {f.label}
+                </button>
+              );
+            })}
           </div>
 
-          {customerList.map((c) => {
+          {visibleCustomers.length === 0 && (
+            <div style={{ padding: '24px 10px', textAlign: 'center', fontSize: 12, color: 'var(--ink3)' }}>—</div>
+          )}
+          {visibleCustomers.map((c) => {
             const active = d ? c.id === d.id : false;
             return (
               <div
                 key={c.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => router.push(`/customers?id=${c.id}`)}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && router.push(`/customers?id=${c.id}`)}
                 className={active ? undefined : 'row-hover'}
                 style={{
                   display: 'flex',

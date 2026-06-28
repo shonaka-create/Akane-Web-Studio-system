@@ -187,13 +187,13 @@ export const customerDetail: CustomerDetail = {
 
 // ---- Inventory ----
 export const stockItems: StockItem[] = [
-  { id: 'i1', name: 'カラー剤 6N', categoryKey: 'catColor', stock: 3, capacity: 25, reorderPt: 10, status: 'order' },
-  { id: 'i2', name: 'アルミホイル', categoryKey: 'catSupply', stock: 1, capacity: 5, reorderPt: 2, status: 'order' },
-  { id: 'i3', name: 'シャンプー（業務用）', categoryKey: 'catCare', stock: 8, capacity: 20, reorderPt: 10, status: 'low' },
-  { id: 'i4', name: 'ヘアオイル（店販）', categoryKey: 'catRetail', stock: 14, capacity: 20, reorderPt: 6, status: 'ok' },
-  { id: 'i5', name: 'トリートメント剤', categoryKey: 'catCare', stock: 22, capacity: 30, reorderPt: 12, status: 'ordered' },
-  { id: 'i6', name: 'フェイスタオル', categoryKey: 'catSupply', stock: 60, capacity: 80, reorderPt: 40, status: 'ok' },
-  { id: 'i7', name: '使い捨てケープ', categoryKey: 'catSupply', stock: 30, capacity: 100, reorderPt: 50, status: 'low' },
+  { id: 'i1', name: 'カラー剤 6N', categoryKey: 'catColor', stock: 3, capacity: 25, reorderPt: 10, status: 'order', supplier: 'ビューティガレージ' },
+  { id: 'i2', name: 'アルミホイル', categoryKey: 'catSupply', stock: 1, capacity: 5, reorderPt: 2, status: 'order', supplier: 'Amazon ビジネス' },
+  { id: 'i3', name: 'シャンプー（業務用）', categoryKey: 'catCare', stock: 8, capacity: 20, reorderPt: 10, status: 'low', supplier: 'ビューティガレージ' },
+  { id: 'i4', name: 'ヘアオイル（店販）', categoryKey: 'catRetail', stock: 14, capacity: 20, reorderPt: 6, status: 'ok', supplier: 'メーカー直販' },
+  { id: 'i5', name: 'トリートメント剤', categoryKey: 'catCare', stock: 22, capacity: 30, reorderPt: 12, status: 'ordered', supplier: 'ビューティガレージ' },
+  { id: 'i6', name: 'フェイスタオル', categoryKey: 'catSupply', stock: 60, capacity: 80, reorderPt: 40, status: 'ok', supplier: 'Amazon ビジネス' },
+  { id: 'i7', name: '使い捨てケープ', categoryKey: 'catSupply', stock: 30, capacity: 100, reorderPt: 50, status: 'low', supplier: '楽天市場' },
 ];
 
 export const orderRows: OrderRow[] = [

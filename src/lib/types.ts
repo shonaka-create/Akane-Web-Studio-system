@@ -115,6 +115,8 @@ export type StockItem = {
   capacity: number;
   reorderPt: number;
   status: InventoryStatus;
+  /** 仕入先（どこで買うか）。未設定なら空文字。 */
+  supplier: string;
 };
 
 export type OrderStatus = 'ordered' | 'shipping' | 'arrived';

@@ -9,10 +9,22 @@ import { upsertShift } from '@/lib/actions';
 import { WEEKDAY_OPTIONS } from '@/lib/formOptions';
 import type { ShiftRow, Staff } from '@/lib/types';
 
+const EN_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/** 指定日を含む週の月曜日を返す。 */
+function mondayOf(d: Date): Date {
+  const out = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  out.setDate(out.getDate() - ((out.getDay() + 6) % 7));
+  return out;
+}
+
 export function ShiftsView({ shiftRows, staff }: { shiftRows: ShiftRow[]; staff: Staff[] }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [open, setOpen] = useState(false);
   const [pending, start] = useTransition();
+  // 週オフセット（0=今週、-1=先週、+1=来週…）。shifts は曜日テンプレートなので
+  // セル内容は週によらず同じだが、日付ヘッダと週ラベルは選択週に追従する。
+  const [weekOffset, setWeekOffset] = useState(0);
 
   function submit(formData: FormData) {
     start(async () => {
@@ -21,15 +33,26 @@ export function ShiftsView({ shiftRows, staff }: { shiftRows: ShiftRow[]; staff:
     });
   }
 
-  const dayHeaders: { key: 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun'; date: number; color?: string }[] = [
-    { key: 'mon', date: 23 },
-    { key: 'tue', date: 24 },
-    { key: 'wed', date: 25 },
-    { key: 'thu', date: 26 },
-    { key: 'fri', date: 27 },
-    { key: 'sat', date: 28, color: 'var(--accent)' },
-    { key: 'sun', date: 29, color: 'var(--rose)' },
-  ];
+  const weekStart = mondayOf(new Date());
+  weekStart.setDate(weekStart.getDate() + weekOffset * 7);
+
+  const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
+  const dayHeaders = DAY_KEYS.map((key, i) => {
+    const d = new Date(weekStart);
+    d.setDate(d.getDate() + i);
+    return {
+      key,
+      date: d.getDate(),
+      color: i === 5 ? 'var(--accent)' : i === 6 ? 'var(--rose)' : undefined,
+    };
+  });
+
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 6);
+  const weekLabel =
+    lang === 'ja'
+      ? `${weekStart.getMonth() + 1}月${weekStart.getDate()}日 – ${weekEnd.getMonth() + 1}月${weekEnd.getDate()}日`
+      : `${EN_MONTHS[weekStart.getMonth()]} ${weekStart.getDate()} – ${EN_MONTHS[weekEnd.getMonth()]} ${weekEnd.getDate()}`;
 
   const navBtn: React.CSSProperties = {
     width: 32,
@@ -45,10 +68,10 @@ export function ShiftsView({ shiftRows, staff }: { shiftRows: ShiftRow[]; staff:
   return (
     <>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 22 }}>
-        <button style={navBtn}>‹</button>
-        <span style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 600 }}>{t.weekLabel}</span>
-        <button style={navBtn}>›</button>
-        <button style={{ font: '500 12px var(--ui)', border: '1px solid var(--line)', background: '#fff', borderRadius: 999, padding: '6px 14px', cursor: 'pointer', color: 'var(--ink2)' }}>{t.today}</button>
+        <button onClick={() => setWeekOffset((w) => w - 1)} style={navBtn} aria-label="previous week">‹</button>
+        <span style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 600 }}>{weekLabel}</span>
+        <button onClick={() => setWeekOffset((w) => w + 1)} style={navBtn} aria-label="next week">›</button>
+        <button onClick={() => setWeekOffset(0)} style={{ font: '500 12px var(--ui)', border: '1px solid var(--line)', background: weekOffset === 0 ? 'var(--accent-soft)' : '#fff', borderRadius: 999, padding: '6px 14px', cursor: 'pointer', color: weekOffset === 0 ? 'var(--accent)' : 'var(--ink2)' }}>{t.today}</button>
         <button onClick={() => setOpen(true)} style={{ marginLeft: 'auto', font: '600 12.5px var(--ui)', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: '9px 18px', cursor: 'pointer' }}>＋ {t.addShift}</button>
       </div>
 

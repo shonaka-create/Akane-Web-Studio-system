@@ -173,7 +173,7 @@ export async function getStockItems(): Promise<StockItem[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('inventory_items')
-    .select('id, name, category_key, stock, capacity, reorder_pt, status')
+    .select('id, name, category_key, stock, capacity, reorder_pt, status, supplier')
     .order('created_at', { ascending: true });
   if (error) throw error;
   return (data ?? []).map((i) => ({
@@ -184,6 +184,7 @@ export async function getStockItems(): Promise<StockItem[]> {
     capacity: i.capacity,
     reorderPt: i.reorder_pt,
     status: i.status as StockItem['status'],
+    supplier: i.supplier ?? '',
   }));
 }
 
@@ -207,11 +208,23 @@ export async function getOrders(): Promise<OrderRow[]> {
 
 export async function getCustomerList(): Promise<CustomerListItem[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('customers')
-    .select('id, initial, name, tone, visits, last_visit, email')
-    .order('last_visit', { ascending: false });
+  const [{ data, error }, follow] = await Promise.all([
+    supabase
+      .from('customers')
+      .select('id, initial, name, tone, visits, last_visit, email')
+      .order('last_visit', { ascending: false }),
+    supabase.from('follow_ups').select('customer_id, customer_name').eq('status', 'send'),
+  ]);
   if (error) throw error;
+
+  // 要フォロー判定用の集合（customer_id 優先、無ければ表示名で照合）。
+  const followIds = new Set<string>();
+  const followNames = new Set<string>();
+  for (const f of follow.data ?? []) {
+    if (f.customer_id) followIds.add(f.customer_id as string);
+    if (f.customer_name) followNames.add(f.customer_name as string);
+  }
+
   return (data ?? []).map((c) => ({
     id: c.id,
     initial: c.initial,
@@ -220,6 +233,9 @@ export async function getCustomerList(): Promise<CustomerListItem[]> {
     visits: c.visits,
     date: c.last_visit ? md(c.last_visit) : '',
     hasEmail: !!c.email,
+    // 新規 = 来店1回以下、要フォロー = フォロー送信予定が残っている顧客。
+    segmentNew: (c.visits ?? 0) <= 1,
+    segmentFollow: followIds.has(c.id) || followNames.has(c.name),
   }));
 }
 
@@ -392,7 +408,12 @@ export async function getBookings(
   return { staff: columns, blocks };
 }
 
+export type SalesPeriod = 'month' | 'lastMonth' | 'year';
+
 export type SalesData = {
+  period: SalesPeriod;
+  /** 当日の積み上げ（毎日の売上入力導線用）。 */
+  today: { revenue: number; count: number };
   summary: SalesSummary;
   trend: SalesMonthBar[];
   categories: SalesCategory[];
@@ -419,12 +440,14 @@ type TxnRow = {
 };
 
 /** 6ヶ月分のゼロ推移＋空集計（transactions テーブル未作成時のフォールバック）。 */
-function emptySales(now: Date): SalesData {
+function emptySales(now: Date, period: SalesPeriod): SalesData {
   const trend: SalesMonthBar[] = [];
   for (let i = 5; i >= 0; i--) {
     trend.push({ month: new Date(now.getFullYear(), now.getMonth() - i, 1).getMonth() + 1, value: 0 });
   }
   return {
+    period,
+    today: { revenue: 0, count: 0 },
     summary: { monthRevenue: 0, monthRevenueDelta: 0, avgSpend: 0, transactions: 0, serviceRevenue: 0, retailRevenue: 0 },
     trend,
     categories: [],
@@ -433,11 +456,14 @@ function emptySales(now: Date): SalesData {
   };
 }
 
-/** 売上ページ用の集計一式（当月サマリ / 6ヶ月推移 / カテゴリ別 / スタッフ別 / 直近取引）。 */
-export async function getSales(): Promise<SalesData> {
+/** 売上ページ用の集計一式（選択期間サマリ / 6ヶ月推移 / カテゴリ別 / スタッフ別 / 直近取引）。 */
+export async function getSales(period: SalesPeriod = 'month'): Promise<SalesData> {
   const supabase = await createClient();
   const now = new Date();
-  const since = new Date(now.getFullYear(), now.getMonth() - 5, 1); // 6ヶ月前の月初
+  // 推移は直近6ヶ月、「今年」期間は年初まで遡る必要があるため早い方を起点にする。
+  const sixAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+  const yearStart = new Date(now.getFullYear(), 0, 1);
+  const since = sixAgo < yearStart ? sixAgo : yearStart;
   const { data, error } = await supabase
     .from('transactions')
     .select('id, txn_date, customer_name, service_key, category, amount, staff(initial, name, tone)')
@@ -446,7 +472,7 @@ export async function getSales(): Promise<SalesData> {
   // transactions マイグレーション未適用時はテーブルが無いので空集計でフォールバック。
   if (error) {
     if (error.code === '42P01' || error.code === 'PGRST205' || /does not exist|find the table/i.test(error.message)) {
-      return emptySales(now);
+      return emptySales(now, period);
     }
     throw error;
   }
@@ -466,20 +492,40 @@ export async function getSales(): Promise<SalesData> {
   });
 
   const ym = (d: string) => d.slice(0, 7); // 'YYYY-MM'
+  const yr = (d: string) => d.slice(0, 4); // 'YYYY'
   const thisMonth = ym(ymd(now));
-  const lastMonth = ym(ymd(new Date(now.getFullYear(), now.getMonth() - 1, 1)));
-  const monthRows = rows.filter((r) => ym(r.txn_date) === thisMonth);
+  const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const lastMonth = ym(ymd(lastMonthDate));
+  const prevOfLast = ym(ymd(new Date(now.getFullYear(), now.getMonth() - 2, 1)));
+  const thisYear = String(now.getFullYear());
 
-  // --- summary（当月） ---
-  const monthRevenue = monthRows.reduce((s, r) => s + r.amount, 0);
-  const serviceRevenue = monthRows.filter((r) => r.category === 'service').reduce((s, r) => s + r.amount, 0);
-  const retailRevenue = monthRows.filter((r) => r.category === 'retail').reduce((s, r) => s + r.amount, 0);
-  const transactions = monthRows.length;
-  const lastMonthRevenue = rows.filter((r) => ym(r.txn_date) === lastMonth).reduce((s, r) => s + r.amount, 0);
+  // 選択期間の行と、前年同種期間（前月比/前年比）の行を切り出す。
+  const inPeriod = (r: TxnRow): boolean =>
+    period === 'year' ? yr(r.txn_date) === thisYear : ym(r.txn_date) === (period === 'lastMonth' ? lastMonth : thisMonth);
+  const prevKey = period === 'year' ? String(now.getFullYear() - 1) : period === 'lastMonth' ? prevOfLast : lastMonth;
+  const inPrev = (r: TxnRow): boolean =>
+    period === 'year' ? yr(r.txn_date) === prevKey : ym(r.txn_date) === prevKey;
+
+  const periodRows = rows.filter(inPeriod);
+
+  // --- 当日の積み上げ ---
+  const todayKey = ymd(now);
+  const todayRows = rows.filter((r) => r.txn_date === todayKey);
+  const today = {
+    revenue: Math.round(todayRows.reduce((s, r) => s + r.amount, 0)),
+    count: todayRows.length,
+  };
+
+  // --- summary（選択期間） ---
+  const periodRevenue = periodRows.reduce((s, r) => s + r.amount, 0);
+  const serviceRevenue = periodRows.filter((r) => r.category === 'service').reduce((s, r) => s + r.amount, 0);
+  const retailRevenue = periodRows.filter((r) => r.category === 'retail').reduce((s, r) => s + r.amount, 0);
+  const transactions = periodRows.length;
+  const prevRevenue = rows.filter(inPrev).reduce((s, r) => s + r.amount, 0);
   const summary: SalesSummary = {
-    monthRevenue: Math.round(monthRevenue),
-    monthRevenueDelta: lastMonthRevenue ? Math.round(((monthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100) : 0,
-    avgSpend: transactions ? Math.round(monthRevenue / transactions) : 0,
+    monthRevenue: Math.round(periodRevenue),
+    monthRevenueDelta: prevRevenue ? Math.round(((periodRevenue - prevRevenue) / prevRevenue) * 100) : 0,
+    avgSpend: transactions ? Math.round(periodRevenue / transactions) : 0,
     transactions,
     serviceRevenue: Math.round(serviceRevenue),
     retailRevenue: Math.round(retailRevenue),
@@ -498,9 +544,9 @@ export async function getSales(): Promise<SalesData> {
     trend.push({ month: mo, value: Math.round(byMonth.get(mo) ?? 0) });
   }
 
-  // --- categories（当月） ---
+  // --- categories（選択期間） ---
   const catMap = new Map<string, number>();
-  for (const r of monthRows) {
+  for (const r of periodRows) {
     const key = r.category === 'retail' ? 'salesRetail' : r.service_key ?? 'svcCut';
     catMap.set(key, (catMap.get(key) ?? 0) + r.amount);
   }
@@ -510,13 +556,13 @@ export async function getSales(): Promise<SalesData> {
       id: `sc${i + 1}`,
       nameKey: key as LabelKey,
       amount: Math.round(amount),
-      pct: monthRevenue ? Math.round((amount / monthRevenue) * 100) : 0,
+      pct: periodRevenue ? Math.round((amount / periodRevenue) * 100) : 0,
       tone: CATEGORY_TONE[key] ?? 'accent',
     }));
 
-  // --- staffRank（当月） ---
+  // --- staffRank（選択期間） ---
   const staffMap = new Map<string, { initial: string; name: string; tone: Tone; amount: number }>();
-  for (const r of monthRows) {
+  for (const r of periodRows) {
     if (!r.staff) continue;
     const cur = staffMap.get(r.staff.name) ?? { ...r.staff, amount: 0 };
     cur.amount += r.amount;
@@ -530,11 +576,11 @@ export async function getSales(): Promise<SalesData> {
       name: s.name,
       tone: s.tone,
       amount: Math.round(s.amount),
-      share: monthRevenue ? Math.round((s.amount / monthRevenue) * 100) : 0,
+      share: periodRevenue ? Math.round((s.amount / periodRevenue) * 100) : 0,
     }));
 
-  // --- txns（直近8件） ---
-  const txns: SalesTxn[] = rows.slice(0, 8).map((r) => ({
+  // --- txns（選択期間の直近8件） ---
+  const txns: SalesTxn[] = periodRows.slice(0, 8).map((r) => ({
     id: r.id,
     date: md(r.txn_date),
     customer: r.customer_name,
@@ -545,5 +591,5 @@ export async function getSales(): Promise<SalesData> {
     amount: Math.round(r.amount),
   }));
 
-  return { summary, trend, categories, staffRank, txns };
+  return { period, today, summary, trend, categories, staffRank, txns };
 }

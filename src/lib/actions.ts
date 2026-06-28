@@ -154,6 +154,7 @@ export async function createInventoryItem(formData: FormData) {
     capacity: num(formData, 'capacity') || stock,
     reorder_pt: reorderPt,
     status,
+    supplier: str(formData, 'supplier') || null,
   });
   if (error) throw error;
   revalidatePath('/inventory');
@@ -173,7 +174,7 @@ export async function orderStockItem(formData: FormData) {
   const { error: e2 } = await supabase.from('orders').insert({
     item: name || '—',
     qty: str(formData, 'qty') || '1',
-    supplier: str(formData, 'supplier') || '—',
+    supplier: str(formData, 'supplier') || '未設定',
     order_date: today,
     eta,
     status: 'ordered',
