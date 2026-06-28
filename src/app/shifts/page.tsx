@@ -1,7 +1,7 @@
-import { getShiftRows } from '@/lib/data';
+import { getShiftRows, getStaff } from '@/lib/data';
 import { ShiftsView } from './ShiftsView';
 
 export default async function ShiftsPage() {
-  const shiftRows = await getShiftRows();
-  return <ShiftsView shiftRows={shiftRows} />;
+  const [shiftRows, staff] = await Promise.all([getShiftRows(), getStaff()]);
+  return <ShiftsView shiftRows={shiftRows} staff={staff} />;
 }

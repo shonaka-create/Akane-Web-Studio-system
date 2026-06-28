@@ -2,15 +2,17 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { LangProvider } from '@/i18n/LangProvider';
 import { AppShell } from '@/components/AppShell';
+import { getCurrentUser } from '@/lib/data';
 
 export const metadata: Metadata = {
   title: 'HUMAN-HUB — Salon System',
   description: '美容サービス管理システム / Salon management system',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const user = await getCurrentUser();
   return (
     <html lang="ja">
       <head>
@@ -26,7 +28,7 @@ export default function RootLayout({
       </head>
       <body>
         <LangProvider>
-          <AppShell>{children}</AppShell>
+          <AppShell user={user}>{children}</AppShell>
         </LangProvider>
       </body>
     </html>

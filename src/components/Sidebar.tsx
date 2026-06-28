@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLang } from '@/i18n/LangProvider';
 import { NAV, navItemForPath, type NavKey } from '@/lib/nav';
+import type { CurrentUser } from '@/lib/data';
 
 const icons: Record<NavKey, React.ReactNode> = {
   dashboard: (
@@ -58,10 +59,12 @@ const icons: Record<NavKey, React.ReactNode> = {
   ),
 };
 
-export function Sidebar() {
+export function Sidebar({ user }: { user: CurrentUser | null }) {
   const pathname = usePathname();
   const { t, lang, setLang } = useLang();
   const activeKey = navItemForPath(pathname).key;
+  const displayName = user?.name ?? 'Guest';
+  const displayInitial = user?.initial ?? 'G';
 
   const langBtn = (active: boolean): React.CSSProperties => ({
     border: 'none',
@@ -165,10 +168,10 @@ export function Sidebar() {
               fontSize: 18,
             }}
           >
-            Y
+            {displayInitial}
           </div>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 500 }}>Yuki Tanaka</div>
+            <div style={{ fontSize: 13, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayName}</div>
             <div style={{ fontSize: 11, color: 'var(--ink3)' }}>{t.roleOwner}</div>
           </div>
         </div>

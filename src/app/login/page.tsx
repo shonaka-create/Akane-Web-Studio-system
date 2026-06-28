@@ -103,6 +103,18 @@ export default async function LoginPage({
               style={inputStyle}
             />
           </label>
+          <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <span style={{ fontSize: 12.5, color: 'var(--ink2)' }}>
+              表示名（ユーザー名）<span style={{ color: 'var(--ink3)', fontSize: 11 }}>　※新規登録時のみ</span>
+            </span>
+            <input
+              name="display_name"
+              type="text"
+              autoComplete="name"
+              placeholder="例）田中 由樹"
+              style={inputStyle}
+            />
+          </label>
 
           <button formAction={login} style={primaryBtn}>
             ログイン

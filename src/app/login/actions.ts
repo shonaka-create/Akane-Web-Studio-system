@@ -19,9 +19,15 @@ export async function login(formData: FormData) {
 
 export async function signup(formData: FormData) {
   const supabase = await createClient();
+  const displayName = String(formData.get('display_name') ?? '').trim();
+  const initial = (displayName[0] ?? 'U').toUpperCase();
   const { error } = await supabase.auth.signUp({
     email: String(formData.get('email') ?? ''),
     password: String(formData.get('password') ?? ''),
+    options: {
+      // 表示名はユーザーメタデータに保存し、サイドバー/挨拶文に反映する。
+      data: { display_name: displayName, initial },
+    },
   });
   if (error) {
     redirect(`/login?error=${encodeURIComponent(error.message)}`);
