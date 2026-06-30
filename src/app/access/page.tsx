@@ -16,7 +16,7 @@ export default function AccessPage() {
     <div style={{ position: 'relative', minHeight: 560 }}>
       {/* Blurred preview behind the upsell */}
       <div style={{ filter: 'blur(5px)', opacity: 0.5, pointerEvents: 'none', userSelect: 'none' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 22 }}>
+        <div className="grid-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 22 }}>
           <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 16, padding: 24 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 18 }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.6"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18" /></svg>
@@ -55,8 +55,8 @@ export default function AccessPage() {
       </div>
 
       {/* Upsell card */}
-      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 22, padding: '40px 42px', maxWidth: 460, textAlign: 'center', boxShadow: '0 24px 60px rgba(46,42,37,.14)' }}>
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+        <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 22, padding: '40px 42px', width: '100%', maxWidth: 460, textAlign: 'center', boxShadow: '0 24px 60px rgba(46,42,37,.14)' }}>
           <div style={{ width: 58, height: 58, borderRadius: '50%', background: '#F0E7D4', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#BFA06A" strokeWidth="1.7"><rect x="4" y="10" width="16" height="11" rx="2.5" /><path d="M8 10V7a4 4 0 0 1 8 0v3" strokeLinecap="round" /></svg>
           </div>

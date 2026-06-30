@@ -81,7 +81,7 @@ export function BookingsView({
 
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 22 }}>
+      <div className="toolbar" style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 22 }}>
         <button onClick={() => shiftDay(-1)} style={navBtn} aria-label="previous day">‹</button>
         <span style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 600 }}>{dayLabel}</span>
         <button onClick={() => shiftDay(1)} style={navBtn} aria-label="next day">›</button>
@@ -118,14 +118,15 @@ export function BookingsView({
         </form>
       </Modal>
 
-      <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 16, padding: '20px 22px', boxShadow: '0 1px 2px rgba(46,42,37,.04)', overflow: 'hidden' }}>
+      <div className="scroll-x" style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 16, padding: '20px 22px', boxShadow: '0 1px 2px rgba(46,42,37,.04)' }}>
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: `60px repeat(${colCount},1fr)`,
+            gridTemplateColumns: `60px repeat(${colCount},minmax(110px,1fr))`,
             gap: '0 6px',
             gridTemplateRows: '42px repeat(22,26px)',
             position: 'relative',
+            minWidth: 60 + colCount * 110,
           }}
         >
           {/* Staff column headers */}

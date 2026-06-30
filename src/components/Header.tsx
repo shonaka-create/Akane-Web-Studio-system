@@ -5,13 +5,14 @@ import { useLang } from '@/i18n/LangProvider';
 import { navItemForPath } from '@/lib/nav';
 import { signout } from '@/app/login/actions';
 
-export function Header() {
+export function Header({ onMenu }: { onMenu?: () => void }) {
   const pathname = usePathname();
   const { t } = useLang();
   const title = t[navItemForPath(pathname).labelKey];
 
   return (
     <header
+      className="app-header"
       style={{
         height: 68,
         flex: 'none',
@@ -24,9 +25,33 @@ export function Header() {
         padding: '0 40px',
       }}
     >
+      <button
+        type="button"
+        className="menu-btn"
+        onClick={onMenu}
+        aria-label="メニューを開く"
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 38,
+          height: 38,
+          marginLeft: -6,
+          border: '1px solid var(--line)',
+          borderRadius: 10,
+          background: '#fff',
+          cursor: 'pointer',
+          color: 'var(--ink2)',
+          flex: 'none',
+        }}
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" />
+        </svg>
+      </button>
       <h1 style={{ fontFamily: 'var(--serif)', fontSize: 24, fontWeight: 600, margin: 0, lineHeight: 1 }}>{title}</h1>
       <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 18 }}>
         <div
+          className="header-search"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -47,7 +72,7 @@ export function Header() {
             style={{ border: 'none', outline: 'none', background: 'none', font: '13px var(--ui)', color: 'var(--ink)', width: '100%' }}
           />
         </div>
-        <span style={{ fontSize: 12.5, color: 'var(--ink2)', whiteSpace: 'nowrap' }}>{t.dateStr}</span>
+        <span className="header-date" style={{ fontSize: 12.5, color: 'var(--ink2)', whiteSpace: 'nowrap' }}>{t.dateStr}</span>
         <div style={{ position: 'relative', display: 'flex' }}>
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" strokeWidth="1.6">
             <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" strokeLinejoin="round" />

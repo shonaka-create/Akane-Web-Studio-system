@@ -49,7 +49,7 @@ export function InventoryView({ stockItems, orderRows }: { stockItems: StockItem
 
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18 }}>
+      <div className="toolbar" style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18 }}>
         <div style={{ display: 'flex', gap: 5, background: '#FBF9F5', border: '1px solid var(--line)', borderRadius: 999, padding: 4 }}>
           <button onClick={() => setTab('stock')} style={tabBtn(tab === 'stock')}>{t.invTabStock}</button>
           <button onClick={() => setTab('orders')} style={tabBtn(tab === 'orders')}>{t.invTabOrders}</button>
@@ -137,6 +137,8 @@ function StockTable({ stockItems }: { stockItems: StockItem[] }) {
   return (
     <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 16, padding: '14px 24px 16px', boxShadow: '0 1px 2px rgba(46,42,37,.04)' }}>
       <StatusLegend />
+      <div className="scroll-x">
+        <div style={{ minWidth: 720 }}>
       <div style={{ display: 'grid', gridTemplateColumns: STOCK_COLS, gap: 16, padding: '14px 0', fontSize: 11, letterSpacing: 0.5, color: 'var(--ink2)', textTransform: 'uppercase', borderBottom: '1px solid var(--line)' }}>
         <div>{t.invItem}</div><div>{t.invStock}</div><div>{t.invReorderPt}</div><div>{t.invSupplier}</div><div>{t.invStatus}</div><div style={{ textAlign: 'right' }}>{t.invAction}</div>
       </div>
@@ -199,6 +201,8 @@ function StockTable({ stockItems }: { stockItems: StockItem[] }) {
           </div>
         );
       })}
+        </div>
+      </div>
     </div>
   );
 }
@@ -214,6 +218,8 @@ function OrdersTable({ orderRows }: { orderRows: OrderRow[] }) {
 
   return (
     <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 16, padding: '8px 24px 16px', boxShadow: '0 1px 2px rgba(46,42,37,.04)' }}>
+      <div className="scroll-x">
+        <div style={{ minWidth: 760 }}>
       <div style={{ display: 'grid', gridTemplateColumns: ORDER_COLS, gap: 14, padding: '14px 0', fontSize: 11, letterSpacing: 0.5, color: 'var(--ink2)', textTransform: 'uppercase', borderBottom: '1px solid var(--line)' }}>
         <div>{t.ordItem}</div><div>{t.ordQty}</div><div>{t.ordSupplier}</div><div>{t.ordDate}</div><div>{t.ordEta}</div><div>{t.ordStatus}</div><div style={{ textAlign: 'right' }}>{t.invAction}</div>
       </div>
@@ -249,6 +255,8 @@ function OrdersTable({ orderRows }: { orderRows: OrderRow[] }) {
           </div>
         );
       })}
+        </div>
+      </div>
     </div>
   );
 }

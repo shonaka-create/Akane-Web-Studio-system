@@ -50,7 +50,7 @@ export function DashboardView({
       </div>
 
       {/* Metric cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 18, marginBottom: 24 }}>
+      <div className="grid-cards-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 18, marginBottom: 24 }}>
         <Metric label={t.mToday} value={m.todayBookings} unit={t.uCases} foot={`▲ ${m.todayBookingsDelta}`} footColor="var(--sage)" />
         <Metric label={t.mStaff} value={m.staffOnShift} unit={t.uPeople} foot={`/ ${m.staffTotal}`} footColor="var(--ink3)" />
         <Metric label={t.mFollow} value={m.needsFollow} unit={t.uPeople} foot={t.followDesc} valueColor="var(--accent)" footColor="var(--accent)" />
@@ -63,7 +63,7 @@ export function DashboardView({
           <h2 style={{ fontFamily: 'var(--serif)', fontSize: 19, fontWeight: 600, margin: 0 }}>{t.secSalesSummary}</h2>
           <Link href="/sales" style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--accent)', textDecoration: 'none' }}>{t.viewAll}</Link>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '0.9fr 2fr', gap: 28, alignItems: 'center' }}>
+        <div className="grid-split" style={{ display: 'grid', gridTemplateColumns: '0.9fr 2fr', gap: 28, alignItems: 'center' }}>
           <div>
             <div style={{ fontSize: 12, color: 'var(--ink2)' }}>{t.salesThisMonth}</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 6 }}>
@@ -96,7 +96,7 @@ export function DashboardView({
         </div>
       </Card>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.7fr 1fr', gap: 22 }}>
+      <div className="grid-split" style={{ display: 'grid', gridTemplateColumns: '1.7fr 1fr', gap: 22 }}>
         {/* Today's schedule */}
         <Card>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: 6 }}>

@@ -67,7 +67,7 @@ export function ShiftsView({ shiftRows, staff }: { shiftRows: ShiftRow[]; staff:
 
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 22 }}>
+      <div className="toolbar" style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 22 }}>
         <button onClick={() => setWeekOffset((w) => w - 1)} style={navBtn} aria-label="previous week">‹</button>
         <span style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 600 }}>{weekLabel}</span>
         <button onClick={() => setWeekOffset((w) => w + 1)} style={navBtn} aria-label="next week">›</button>
@@ -100,8 +100,8 @@ export function ShiftsView({ shiftRows, staff }: { shiftRows: ShiftRow[]; staff:
         </form>
       </Modal>
 
-      <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 16, padding: 22, boxShadow: '0 1px 2px rgba(46,42,37,.04)' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '150px repeat(7,1fr)', gap: 8 }}>
+      <div className="scroll-x" style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 16, padding: 22, boxShadow: '0 1px 2px rgba(46,42,37,.04)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '150px repeat(7,minmax(72px,1fr))', gap: 8, minWidth: 660 }}>
           <div />
           {dayHeaders.map((d) => (
             <div key={d.key} style={{ textAlign: 'center', paddingBottom: 8 }}>

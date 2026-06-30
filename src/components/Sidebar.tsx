@@ -59,7 +59,15 @@ const icons: Record<NavKey, React.ReactNode> = {
   ),
 };
 
-export function Sidebar({ user }: { user: CurrentUser | null }) {
+export function Sidebar({
+  user,
+  open = false,
+  onNavigate,
+}: {
+  user: CurrentUser | null;
+  open?: boolean;
+  onNavigate?: () => void;
+}) {
   const pathname = usePathname();
   const { t, lang, setLang } = useLang();
   const activeKey = navItemForPath(pathname).key;
@@ -80,6 +88,7 @@ export function Sidebar({ user }: { user: CurrentUser | null }) {
 
   return (
     <aside
+      className={`app-sidebar${open ? ' is-open' : ''}`}
       style={{
         width: 248,
         flex: 'none',
@@ -105,6 +114,7 @@ export function Sidebar({ user }: { user: CurrentUser | null }) {
             <Link
               key={item.key}
               href={item.href}
+              onClick={onNavigate}
               className="nav-item"
               style={{
                 display: 'flex',
@@ -152,27 +162,48 @@ export function Sidebar({ user }: { user: CurrentUser | null }) {
           <button onClick={() => setLang('ja')} style={langBtn(lang === 'ja')}>日本語</button>
           <button onClick={() => setLang('en')} style={langBtn(lang === 'en')}>EN</button>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '16px 10px 8px', borderTop: '1px solid var(--line)' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 11,
+            padding: '12px 14px',
+            borderRadius: 14,
+            background: 'linear-gradient(135deg, #16345d 0%, #2f6094 100%)',
+          }}
+        >
           <div
             style={{
-              width: 36,
-              height: 36,
+              width: 40,
+              height: 40,
               flex: 'none',
-              borderRadius: '50%',
-              background: 'var(--accent)',
+              borderRadius: 11,
+              background: 'rgba(255,255,255,.18)',
               color: '#fff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontFamily: 'var(--serif)',
-              fontSize: 18,
+              fontFamily: 'var(--ui)',
+              fontWeight: 700,
+              fontSize: 15,
+              letterSpacing: 0.5,
             }}
           >
             {displayInitial}
           </div>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayName}</div>
-            <div style={{ fontSize: 11, color: 'var(--ink3)' }}>{t.roleOwner}</div>
+            <div
+              style={{
+                fontSize: 14,
+                fontWeight: 700,
+                color: '#fff',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {displayName}
+            </div>
           </div>
         </div>
       </div>

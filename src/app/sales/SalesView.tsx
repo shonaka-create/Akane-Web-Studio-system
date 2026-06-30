@@ -97,7 +97,7 @@ export function SalesView({ period, today, summary: s, trend, categories, staffR
         </button>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 22 }}>
+      <div className="toolbar" style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 22 }}>
         <span style={{ fontSize: 12, color: 'var(--ink3)', marginRight: 2 }}>{t.salesViewPeriod}</span>
         <div style={{ display: 'flex', gap: 5, background: '#FBF9F5', border: '1px solid var(--line)', borderRadius: 999, padding: 4 }}>
           {periodOptions.map((p) => (
@@ -142,7 +142,7 @@ export function SalesView({ period, today, summary: s, trend, categories, staffR
       </Modal>
 
       {/* Metric cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 18, marginBottom: 24 }}>
+      <div className="grid-cards-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 18, marginBottom: 24 }}>
         <Metric
           label={revenueLabel}
           value={money(s.monthRevenue)}
@@ -160,7 +160,7 @@ export function SalesView({ period, today, summary: s, trend, categories, staffR
         <Metric label={t.mTxn} value={s.transactions} unit={t.uCases} foot={periodName} footColor="var(--ink3)" />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.7fr 1fr', gap: 22, marginBottom: 22 }}>
+      <div className="grid-split" style={{ display: 'grid', gridTemplateColumns: '1.7fr 1fr', gap: 22, marginBottom: 22 }}>
         {/* Revenue trend */}
         <Card>
           <h2 style={{ fontFamily: 'var(--serif)', fontSize: 19, fontWeight: 600, margin: '0 0 18px' }}>{t.secSalesTrend}</h2>
@@ -212,7 +212,7 @@ export function SalesView({ period, today, summary: s, trend, categories, staffR
         </Card>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.7fr', gap: 22 }}>
+      <div className="grid-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1.7fr', gap: 22 }}>
         {/* Sales by staff */}
         <Card>
           <h2 style={{ fontFamily: 'var(--serif)', fontSize: 19, fontWeight: 600, margin: '0 0 6px' }}>{t.secSalesStaff}</h2>
@@ -238,21 +238,25 @@ export function SalesView({ period, today, summary: s, trend, categories, staffR
         {/* Recent transactions */}
         <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 16, padding: '22px 24px 16px', boxShadow: '0 1px 2px rgba(46,42,37,.04)' }}>
           <h2 style={{ fontFamily: 'var(--serif)', fontSize: 19, fontWeight: 600, margin: '0 0 10px' }}>{t.secSalesRecent}</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: TXN_COLS, gap: 14, padding: '10px 0', fontSize: 11, letterSpacing: 0.5, color: 'var(--ink2)', textTransform: 'uppercase', borderBottom: '1px solid var(--line)' }}>
-            <div>{t.ordDate}</div><div>{t.salesColCustomer}</div><div>{t.salesColMenu}</div><div>{t.salesColStaff}</div><div style={{ textAlign: 'right' }}>{t.salesColAmount}</div>
-          </div>
-          {txns.map((tx, idx) => (
-            <div key={tx.id} style={{ display: 'grid', gridTemplateColumns: TXN_COLS, gap: 14, padding: '13px 0', alignItems: 'center', borderBottom: idx === txns.length - 1 ? 'none' : '1px solid var(--line)', fontSize: 13 }}>
-              <div style={{ color: 'var(--ink2)' }}>{tx.date}</div>
-              <div style={{ fontWeight: 500 }}>{tx.customer}</div>
-              <div style={{ color: 'var(--ink2)' }}>{t[tx.serviceKey]}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Avatar initial={tx.staffInitial} tone={tx.tone} size={24} />
-                <span style={{ fontSize: 12, color: 'var(--ink2)' }}>{tx.staffName}</span>
+          <div className="scroll-x">
+            <div style={{ minWidth: 480 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: TXN_COLS, gap: 14, padding: '10px 0', fontSize: 11, letterSpacing: 0.5, color: 'var(--ink2)', textTransform: 'uppercase', borderBottom: '1px solid var(--line)' }}>
+                <div>{t.ordDate}</div><div>{t.salesColCustomer}</div><div>{t.salesColMenu}</div><div>{t.salesColStaff}</div><div style={{ textAlign: 'right' }}>{t.salesColAmount}</div>
               </div>
-              <div style={{ textAlign: 'right', fontWeight: 600, fontFamily: 'var(--serif)' }}>{money(tx.amount)}</div>
+              {txns.map((tx, idx) => (
+                <div key={tx.id} style={{ display: 'grid', gridTemplateColumns: TXN_COLS, gap: 14, padding: '13px 0', alignItems: 'center', borderBottom: idx === txns.length - 1 ? 'none' : '1px solid var(--line)', fontSize: 13 }}>
+                  <div style={{ color: 'var(--ink2)' }}>{tx.date}</div>
+                  <div style={{ fontWeight: 500 }}>{tx.customer}</div>
+                  <div style={{ color: 'var(--ink2)' }}>{t[tx.serviceKey]}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Avatar initial={tx.staffInitial} tone={tx.tone} size={24} />
+                    <span style={{ fontSize: 12, color: 'var(--ink2)' }}>{tx.staffName}</span>
+                  </div>
+                  <div style={{ textAlign: 'right', fontWeight: 600, fontFamily: 'var(--serif)' }}>{money(tx.amount)}</div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </>

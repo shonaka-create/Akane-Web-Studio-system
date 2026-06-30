@@ -96,7 +96,7 @@ function DetailView({ customerCount, customerList, customerDetail, staff, onBulk
           <FormActions cancelLabel={t.formCancel} saveLabel={t.formSave} onCancel={() => setAddOpen(false)} pending={pending} />
         </form>
       </Modal>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
+      <div className="toolbar" style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
           <span style={{ fontFamily: 'var(--serif)', fontSize: 21, fontWeight: 600 }}>{t.custCountLabel} {customerCount.total}</span>
           <span style={{ fontSize: 12, color: 'var(--ink2)' }}>{t.custContactReady} {customerCount.withContact}</span>
@@ -108,7 +108,7 @@ function DetailView({ customerCount, customerList, customerDetail, staff, onBulk
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '318px 1fr', gap: 22, alignItems: 'start' }}>
+      <div className="grid-split" style={{ display: 'grid', gridTemplateColumns: '318px 1fr', gap: 22, alignItems: 'start' }}>
         {/* List */}
         <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 16, padding: 18, boxShadow: '0 1px 2px rgba(46,42,37,.04)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#FBF9F5', border: '1px solid var(--line)', borderRadius: 999, padding: '8px 13px', marginBottom: 14 }}>
@@ -181,7 +181,7 @@ function DetailView({ customerCount, customerList, customerDetail, staff, onBulk
         {d && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
             <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 16, padding: '24px 26px', boxShadow: '0 1px 2px rgba(46,42,37,.04)' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+              <div className="toolbar" style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
                 <Avatar initial={d.initial} tone={d.tone} size={54} solid />
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -196,14 +196,14 @@ function DetailView({ customerCount, customerList, customerDetail, staff, onBulk
                 </div>
                 <button style={{ font: '600 12.5px var(--ui)', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: '9px 18px', cursor: 'pointer', whiteSpace: 'nowrap' }}>{t.btnSendThanks}</button>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14, marginTop: 20 }}>
+              <div className="grid-stats-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14, marginTop: 20 }}>
                 <Stat label={t.custVisits} value={<>{d.visits} <span style={{ fontSize: 12, color: 'var(--ink3)' }}>{t.uVisit}</span></>} />
                 <Stat label={t.custLast} value={d.lastVisit} />
                 <Stat label={t.custSpend} value={d.spend} />
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1.25fr 1fr', gap: 22, alignItems: 'start' }}>
+            <div className="grid-split" style={{ display: 'grid', gridTemplateColumns: '1.25fr 1fr', gap: 22, alignItems: 'start' }}>
               {/* Memos */}
               <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 16, padding: '22px 24px', boxShadow: '0 1px 2px rgba(46,42,37,.04)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingBottom: 15, borderBottom: '1px solid var(--line)', marginBottom: 4 }}>
@@ -324,7 +324,7 @@ function BulkView({ customerCount, customerList, onBack }: Props & { onBack: () 
   return (
     <>
       <button onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: 6, font: '500 12.5px var(--ui)', border: 'none', background: 'none', cursor: 'pointer', color: 'var(--ink2)', padding: 0, marginBottom: 18 }}>‹ {t.bulkBack}</button>
-      <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 22, alignItems: 'start' }}>
+      <div className="grid-split" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 22, alignItems: 'start' }}>
         <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 16, padding: '24px 26px', boxShadow: '0 1px 2px rgba(46,42,37,.04)' }}>
           <h2 style={{ fontFamily: 'var(--serif)', fontSize: 20, fontWeight: 600, margin: '0 0 20px' }}>{t.bulkTitle}</h2>
           <div style={{ marginBottom: 16 }}>

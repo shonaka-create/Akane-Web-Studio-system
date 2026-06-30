@@ -22,7 +22,7 @@ export function SettingsView({ staff }: { staff: Staff[] }) {
 
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
+      <div className="toolbar" style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
         <div>
           <div style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 600 }}>{t.settingsStaffTitle}</div>
           <div style={{ fontSize: 12, color: 'var(--ink2)', marginTop: 3 }}>{t.settingsStaffDesc}</div>
