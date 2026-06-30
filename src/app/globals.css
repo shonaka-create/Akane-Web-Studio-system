@@ -65,10 +65,10 @@ textarea::placeholder {
   color: var(--ink3);
 }
 
-/* ===== Responsive (tablet ≤1024px / mobile ≤640px) ===== */
+/* ===== Responsive (tablet ≤1200px / mobile ≤640px) ===== */
 
 /* Sidebar turns into an off-canvas drawer on tablet & smaller. */
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .app-sidebar {
     position: fixed !important;
     top: 0 !important;
@@ -89,7 +89,7 @@ textarea::placeholder {
 .app-backdrop {
   display: none;
 }
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .app-backdrop.is-open {
     display: block;
     position: fixed;
@@ -103,14 +103,14 @@ textarea::placeholder {
 .menu-btn {
   display: none;
 }
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .menu-btn {
     display: inline-flex;
   }
 }
 
 /* Shrink shell padding as the viewport narrows. */
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .app-header {
     padding: 0 24px !important;
   }
@@ -134,7 +134,7 @@ textarea::placeholder {
 }
 
 /* Collapsing grids. */
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .grid-cards-4 {
     grid-template-columns: repeat(2, 1fr) !important;
   }
@@ -156,4 +156,13 @@ textarea::placeholder {
 .scroll-x {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Grid items default to min-width:auto, so a wide (min-width) child such as a
+   scrollable table forces the whole track — and the page — to overflow. Let
+   them shrink so only the .scroll-x inner scrolls. */
+.grid-split > *,
+.grid-cards-4 > *,
+.grid-stats-3 > * {
+  min-width: 0;
 }

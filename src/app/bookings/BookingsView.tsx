@@ -153,14 +153,14 @@ export function BookingsView({
             </div>
           ))}
 
-          {/* Horizontal hour gridlines */}
+          {/* Horizontal hour gridlines (start after the hour-label gutter) */}
           {BOOKING_HOURS.map((_, i) => (
-            <div key={`line-${i}`} style={{ gridColumn: '1 / -1', gridRow: 2 + i * 2, borderTop: '1px solid var(--line)' }} />
+            <div key={`line-${i}`} style={{ gridColumn: '2 / -1', gridRow: 2 + i * 2, borderTop: '1px solid var(--line)' }} />
           ))}
 
           {/* Hour labels */}
           {BOOKING_HOURS.map((h, i) => (
-            <div key={`hr-${h}`} style={{ gridColumn: 1, gridRow: 2 + i * 2, fontSize: 10.5, color: 'var(--ink3)', transform: 'translateY(-7px)' }}>
+            <div key={`hr-${h}`} style={{ gridColumn: 1, gridRow: 2 + i * 2, fontSize: 10.5, color: 'var(--ink3)', transform: 'translateY(-7px)', paddingRight: 8, whiteSpace: 'nowrap' }}>
               {h}
             </div>
           ))}

@@ -162,48 +162,26 @@ export function Sidebar({
           <button onClick={() => setLang('ja')} style={langBtn(lang === 'ja')}>日本語</button>
           <button onClick={() => setLang('en')} style={langBtn(lang === 'en')}>EN</button>
         </div>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 11,
-            padding: '12px 14px',
-            borderRadius: 14,
-            background: 'linear-gradient(135deg, #16345d 0%, #2f6094 100%)',
-          }}
-        >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '16px 10px 8px', borderTop: '1px solid var(--line)' }}>
           <div
             style={{
-              width: 40,
-              height: 40,
+              width: 36,
+              height: 36,
               flex: 'none',
-              borderRadius: 11,
-              background: 'rgba(255,255,255,.18)',
+              borderRadius: '50%',
+              background: 'var(--accent)',
               color: '#fff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontFamily: 'var(--ui)',
-              fontWeight: 700,
-              fontSize: 15,
-              letterSpacing: 0.5,
+              fontFamily: 'var(--serif)',
+              fontSize: 18,
             }}
           >
             {displayInitial}
           </div>
           <div style={{ minWidth: 0 }}>
-            <div
-              style={{
-                fontSize: 14,
-                fontWeight: 700,
-                color: '#fff',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {displayName}
-            </div>
+            <div style={{ fontSize: 13, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayName}</div>
           </div>
         </div>
       </div>
